@@ -1,2 +1,0 @@
--e git+https://github.com/networkx/networkx/#egg=networkx
-
