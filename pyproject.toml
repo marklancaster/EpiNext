@@ -10,6 +10,16 @@ dependencies = [
     "networkx>=3.6.1",
     "numba>=0.65.1",
     "pandas>=3.0.3",
+    "pytest",
     "ruff>=0.15.16",
     "scipy>=1.17.1",
 ]
+
+[tool.ruff]
+line-length = 88
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
+
+[tool.mypy]
+strict = true
