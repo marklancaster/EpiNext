@@ -1,0 +1,2 @@
+- name: Pytest Coverage Comment
+  uses: MishaKav/pytest-coverage-comment@v1.7.2
