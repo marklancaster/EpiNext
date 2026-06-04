@@ -1,6 +1,6 @@
-# **EoNv2 Project Task Breakdown (WBS)**
+# **EpiNext Project Task Breakdown (WBS)**
 
-**Project:** Modernization of Epidemics on Networks (EoNv2)
+**Project:** Modernization of Epidemics on Networks (EpiNext)
 
 **Document Version:** 2.0
 
@@ -88,7 +88,7 @@ This document provides a granular task breakdown for Jules, expanding on the 7-p
 
 **Goal:** Ensure production readiness and flawless developer experience.
 
-* \[ \] **Task 7.1:** Write Sphinx/Google-style docstrings for all classes and methods in `core`.  
+* \[ \] **Task 7.1:** Write Numpy-style docstrings for all classes and methods in `core`.  
 * \[ \] **Task 7.2:** Write comprehensive docstrings and usage examples for the pre-built `models`.  
 * \[ \] **Task 7.3:** Run a final, comprehensive `mypy --strict` pass across the entire codebase; resolve all `Any` and missing type hints.  
 * \[ \] **Task 7.4:** Run `ruff check --fix` and `ruff format` to finalize styling.  

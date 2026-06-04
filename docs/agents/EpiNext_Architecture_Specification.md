@@ -137,7 +137,7 @@ The project will strictly utilize a modern, high-performance Python ecosystem.
   * `networkx` \>= 3.0 (Public-facing graph structures).  
   * `pandas` (For clean CSV exporting).  
   * `sqlite3` (Built-in, for persistence).  
-* **Documentation:** Standard Sphinx/Google style docstrings for all public classes.
+* **Documentation:** Standard Numpy style docstrings for all public classes.
 
 ## **6\. Proposed User-Facing API**
 
@@ -249,7 +249,7 @@ Jules must not attempt to generate the entire library in a single response (whic
 
 ### **Phase 7: Final Documentation & Type Verification**
 
-* Generate Sphinx/Google compliant docstrings for every public method.  
+* Generate Numpy style compliant docstrings for every method.  
 * Run a final `mypy --strict` and `ruff check --fix` pass over the entire codebase to ensure production readiness.
 
 ***End of Specification.*** Jules, acknowledge your understanding of these constraints. Wait for the user's prompt before beginning Phase 1\.

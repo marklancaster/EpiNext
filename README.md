@@ -38,6 +38,6 @@ uv run pytest -v
 
 ## Issues & Contributions
 
-* **Bugs & Feature Requests:** Please use the GitHub Issues tab to report bugs or request new features for the EoNv2 engine.
+* **Bugs & Feature Requests:** Please use the GitHub Issues tab to report bugs or request new features for the EpiNext engine.
 * **Legacy Book Errata:** For corrections or to report an error to the content in the published Springer book, please see the legacy `errata.md` file from the original repository.
 * **Contributing:** We welcome new contributors! EpiNext follows strict Test-Driven Development (TDD). Please ensure all pull requests are accompanied by exhaustive `pytest` coverage and adhere to modern `ruff` formatting rules.
