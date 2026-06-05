@@ -26,6 +26,10 @@ You must format this entry as a single line of valid JSON matching the schema be
 * **Package Management:** Use `uv` for all dependency management and environment configuration.
 * **Linting:** Use `ruff` for all formatting and linting. Code must pass strict modern rules.
 * **Methodology:** Strict Test-Driven Development (TDD) is required. You must write exhaustive `pytest` coverage before implementing core logic.
+* **Coverage Threshold:** All new code and modifications must maintain a minimum of **95% branch and line coverage**. 
+  * You must run coverage checks locally using: `uv run pytest`
+  * Pull requests or code changes that drop coverage below 95% or introduce uncovered paths in core simulation engines will fail automation steps and be rejected.
+  * Code blocks that are genuinely untestable (e.g., specific CUDA fallback exceptions or defensive assertions) must be explicitly marked with `# pragma: no cover`.
 
 ## 2. Core Architecture (The Engine)
 * **OOP API:** The public API must be highly Object-Oriented (PyTorch/Keras style). Users should be able to create custom models by subclassing a `BaseEpidemicModel`.
