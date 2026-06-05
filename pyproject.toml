@@ -32,6 +32,22 @@ select = ["E", "F", "I"]
 strict = true
 files = ["src", "tests"]
 
+[[tool.mypy.overrides]]
+module = ["numba", "numba.*", "mlx", "mlx.*"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+# GPU module uses dynamic CUDA/MLX decorators that cannot be fully typed.
+module = ["EpiNext.core.gpu"]
+disable_error_code = ["untyped-decorator"]
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
 [tool.pytest.ini_options]
 minversion = "8.0"
 testpaths = ["tests"]

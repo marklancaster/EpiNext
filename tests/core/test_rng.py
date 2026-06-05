@@ -1,6 +1,6 @@
 from typing import Any
 
-from numba import njit  # type: ignore
+from numba import njit
 
 from EpiNext.core.rng import get_random_float, hash_context
 

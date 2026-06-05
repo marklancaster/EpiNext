@@ -134,7 +134,7 @@ wheels = [
 [[package]]
 name = "epinext"
 version = "0.1.0"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
     { name = "networkx" },
     { name = "numba" },
