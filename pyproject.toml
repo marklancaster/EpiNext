@@ -5,25 +5,33 @@ description = "A modern, highly extensible object-oriented framework for modelin
 readme = "README.md"
 requires-python = ">=3.13.0"
 dependencies = [
-    "hypothesis>=6.155.1",
-    "mypy>=2.1.0",
+    "numpy>=2.3.0",
     "networkx>=3.6.1",
     "numba>=0.65.1",
     "pandas>=3.0.3",
-    "pytest",
+    "scipy>=1.17.1",
+]
+
+[project.optional-dependencies]
+dev = [
+    "hypothesis>=6.155.1",
+    "mypy>=2.1.0",
+    "pytest>=8.4.2",
     "pytest-cov>=7.1.0",
     "ruff>=0.15.16",
-    "scipy>=1.17.1",
 ]
 
 [tool.ruff]
 line-length = 88
+target-version = "py313"
 
 [tool.ruff.lint]
 select = ["E", "F", "I"]
 
 [tool.mypy]
 strict = true
+files = ["src", "tests"]
 
 [tool.pytest.ini_options]
+minversion = "8.0"
 testpaths = ["tests"]
