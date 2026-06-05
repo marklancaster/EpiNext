@@ -51,3 +51,22 @@ where = ["src"]
 [tool.pytest.ini_options]
 minversion = "8.0"
 testpaths = ["tests"]
+addopts = "--cov=src --cov-branch --cov-report=term-missing --cov-fail-under=95 --strict-markers"
+
+[tool.coverage.run]
+branch = true
+source = ["src"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+fail_under = 95
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise NotImplementedError",
+    "if TYPE_CHECKING:",
+    "@abstractmethod",
+    # Numba JIT signature definitions or overhead blocks that aren't testable directly
+    "if numba.compiled:", 
+]
