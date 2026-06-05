@@ -31,13 +31,13 @@ This document provides a granular task breakdown for Jules, expanding on the 7-p
 
 **Goal:** Abstract NetworkX graphs into high-performance, cache-friendly flat arrays.
 
-* \[ \] **Task 2.1:** Define the `CompiledGraph` Python Dataclass structure (Type-hinted for NumPy arrays).  
-* \[ \] **Task 2.2:** **(TDD)** Write `pytest` assertions verifying that simple NetworkX edge lists accurately map to expected CSR arrays (`indptr` and `indices`).  
-* \[ \] **Task 2.3:** **(TDD)** Write tests to ensure node/edge weights accurately map to the correct indices in `float32` arrays.  
-* \[ \] **Task 2.4:** Implement `src/core/compiler.py` to parse NetworkX directed and undirected graphs.  
-* \[ \] **Task 2.5:** Implement the core CSR mapping logic (Size $N + 1$ for `indptr`, Size $E$ for `indices`).  
-* \[ \] **Task 2.6:** Implement strict memory typing: allocate `node_states` as `uint8`, and `edge_weights` as `float32` to minimize cache misses.  
-* \[ \] **Task 2.7:** Implement the Graph Caching mechanism to bypass the expensive compilation step if the same graph is passed sequentially.
+* \[x\] **Task 2.1:** Define the `CompiledGraph` Python Dataclass structure (Type-hinted for NumPy arrays).  
+* \[x\] **Task 2.2:** **(TDD)** Write `pytest` assertions verifying that simple NetworkX edge lists accurately map to expected CSR arrays (`indptr` and `indices`).  
+* \[x\] **Task 2.3:** **(TDD)** Write tests to ensure node/edge weights accurately map to the correct indices in `float32` arrays.  
+* \[x\] **Task 2.4:** Implement `src/core/compiler.py` to parse NetworkX directed and undirected graphs.  
+* \[x\] **Task 2.5:** Implement the core CSR mapping logic (Size $N + 1$ for `indptr`, Size $E$ for `indices`).  
+* \[x\] **Task 2.6:** Implement strict memory typing: allocate `node_states` as `uint8`, and `edge_weights` as `float32` to minimize cache misses.  
+* \[x\] **Task 2.7:** Implement the Graph Caching mechanism to bypass the expensive compilation step if the same graph is passed sequentially.
 
 ## **Phase 3: The Hash-Based RNG & Numba Engine**
 
