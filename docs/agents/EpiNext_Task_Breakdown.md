@@ -14,18 +14,18 @@ This document provides a granular task breakdown for Jules, expanding on the 7-p
 
 **Goal:** Establish a robust, modern Python development environment.
 
-* \[ \] **Task 1.1:** Check the project initialisation.  
-* \[ \] **Task 1.2:** Configure `pyproject.toml` with project metadata and core dependencies (`numpy`, `numba`, `networkx`, `pandas`, `scipy`) if needed.  
-* \[ \] **Task 1.3:** Add development dependencies to `pyproject.toml` (`pytest`, `hypothesis`, `ruff`, `mypy`) if needed.  
-* \[ \] **Task 1.4:** Configure strict `ruff` rules in `pyproject.toml` (line-length=88, `I` for import sorting, PEP8 compliance).  
-* \[ \] **Task 1.5:** Configure `mypy` for strict typing (`strict = true`).  
-* \[ \] **Task 1.6:** Scaffold the target directory structure:  
+* \[x\] **Task 1.1:** Check the project initialisation.  
+* \[x\] **Task 1.2:** Configure `pyproject.toml` with project metadata and core dependencies (`numpy`, `numba`, `networkx`, `pandas`, `scipy`) if needed.  
+* \[x\] **Task 1.3:** Add development dependencies to `pyproject.toml` (`pytest`, `hypothesis`, `ruff`, `mypy`) if needed.  
+* \[x\] **Task 1.4:** Configure strict `ruff` rules in `pyproject.toml` (line-length=88, `I` for import sorting, PEP8 compliance).  
+* \[x\] **Task 1.5:** Configure `mypy` for strict typing (`strict = true`).  
+* \[x\] **Task 1.6:** Scaffold the target directory structure:  
   * `src/core/`  
   * `src/models/`  
   * `src/interventions/`  
   * `src/utils/`  
   * `tests/`  
-* \[ \] **Task 1.7:** Set up a basic `pytest` configuration file and verify the test runner executes correctly on an empty suite.
+* \[x\] **Task 1.7:** Set up a basic `pytest` configuration file and verify the test runner executes correctly on an empty suite.
 
 ## **Phase 2: Graph Compilation & Memory Management**
 
