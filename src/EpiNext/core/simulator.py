@@ -137,6 +137,148 @@ def gillespie_step(
     return new_time, selected_node, new_state
 
 
+@nb.njit(inline="always")  # type: ignore
+def _event_type_for_state(state: int) -> int:
+    """Maps the current node state to its deterministic event type identifier.
+
+    Parameters
+    ----------
+    state : int
+        Current node state encoded as an integer.
+
+    Returns
+    -------
+    int
+        The event type identifier used to seed the localized RNG stream.
+    """
+    if state == 0:
+        return 1
+    if state == 1:
+        return 2
+    return 0
+
+
+@nb.njit(inline="always")  # type: ignore
+def _compute_node_propensity(
+    node_idx: int,
+    node_states: np.ndarray,
+    indptr: np.ndarray,
+    indices: np.ndarray,
+    edge_weights: np.ndarray,
+    transmission_rate: float,
+    recovery_rate: float,
+) -> float:
+    """Computes a single node's propensity from its local neighborhood.
+
+    Parameters
+    ----------
+    node_idx : int
+        Node index whose propensity should be evaluated.
+    node_states : np.ndarray
+        Current node states.
+    indptr : np.ndarray
+        CSR row pointer array.
+    indices : np.ndarray
+        CSR adjacency index array.
+    edge_weights : np.ndarray
+        CSR edge weight array.
+    transmission_rate : float
+        Transmission rate for susceptible nodes.
+    recovery_rate : float
+        Recovery rate for infected nodes.
+
+    Returns
+    -------
+    float
+        The local propensity for the requested node.
+    """
+    state = int(node_states[node_idx])
+
+    # Step 1: Infected nodes only contribute a local recovery clock.
+    if state == 1:
+        return recovery_rate
+
+    # Step 2: Susceptible nodes accumulate transmission pressure exclusively
+    # from their own local adjacency slice.
+    if state == 0:
+        infected_neighbors = 0.0
+        for edge_idx in range(indptr[node_idx], indptr[node_idx + 1]):
+            neighbor = indices[edge_idx]
+            if node_states[neighbor] == 1:
+                infected_neighbors += edge_weights[edge_idx]
+        return transmission_rate * infected_neighbors
+
+    # Step 3: Recovered nodes have no outgoing event clock in this simplified
+    # SIR-compatible engine.
+    return 0.0
+
+
+@nb.njit(inline="always")  # type: ignore
+def _draw_next_event_time(
+    current_time: float,
+    node_idx: int,
+    event_type: int,
+    propensity: float,
+) -> float:
+    """Draws a deterministic absolute event time for a single node.
+
+    Parameters
+    ----------
+    current_time : float
+        The local rescheduling reference time.
+    node_idx : int
+        Node index being scheduled.
+    event_type : int
+        Encoded event type identifier.
+    propensity : float
+        Current local propensity.
+
+    Returns
+    -------
+    float
+        The next absolute event time, or ``np.inf`` when no event is possible.
+    """
+    if propensity <= 0.0 or event_type == 0:
+        return np.inf
+
+    random_value = float(get_random_float(current_time, node_idx, event_type))
+    if random_value <= 0.0:
+        random_value = 1e-12
+
+    return float(current_time - (np.log(random_value) / propensity))
+
+
+@nb.njit(inline="always")  # type: ignore
+def _node_depends_on(
+    node_idx: int,
+    target_node: int,
+    indptr: np.ndarray,
+    indices: np.ndarray,
+) -> bool:
+    """Checks whether a node's local propensity depends on a target node.
+
+    Parameters
+    ----------
+    node_idx : int
+        Node whose adjacency row should be inspected.
+    target_node : int
+        Node that may influence the row's propensity.
+    indptr : np.ndarray
+        CSR row pointer array.
+    indices : np.ndarray
+        CSR adjacency index array.
+
+    Returns
+    -------
+    bool
+        ``True`` when the node's local neighborhood includes the target node.
+    """
+    for edge_idx in range(indptr[node_idx], indptr[node_idx + 1]):
+        if indices[edge_idx] == target_node:
+            return True
+    return False
+
+
 @nb.njit()  # type: ignore
 def _run_simulation_cpu(
     compiled_graph: tuple[
@@ -175,34 +317,88 @@ def _run_simulation_cpu(
     indptr, indices, edge_weights, _, node_states = compiled_graph
 
     time_t = 0.0
-    spontaneous_rates = np.array([0.0, recovery_rate, 0.0], dtype=np.float32)
+    node_count = node_states.shape[0]
+    propensities = np.zeros(node_count, dtype=np.float32)
+    next_event_times = np.full(node_count, np.inf, dtype=np.float64)
 
-    while time_t < max_time:
-        propensities = calculate_propensities(
+    # Step 1: Seed one deterministic local event clock per node so unrelated
+    # subgraphs cannot perturb already scheduled events.
+    for node_idx in range(node_count):
+        propensity = _compute_node_propensity(
+            node_idx,
             node_states,
             indptr,
             indices,
             edge_weights,
-            spontaneous_rates,
             transmission_rate,
             recovery_rate,
         )
+        propensities[node_idx] = propensity
+        next_event_times[node_idx] = _draw_next_event_time(
+            time_t,
+            node_idx,
+            _event_type_for_state(int(node_states[node_idx])),
+            propensity,
+        )
 
-        new_time, node, new_state = gillespie_step(time_t, node_states, propensities)
+    while time_t < max_time:
+        selected_node = -1
+        selected_time = np.inf
 
-        if node == -1:
+        # Step 2: Select the earliest local event without collapsing all
+        # propensities into a shared global RNG stream.
+        for node_idx in range(node_count):
+            candidate_time = next_event_times[node_idx]
+            if candidate_time < selected_time:
+                selected_time = candidate_time
+                selected_node = node_idx
+
+        if selected_node == -1 or not np.isfinite(selected_time):
+            break
+        if selected_time > max_time:
             break
 
-        time_t = new_time
-        node_states[node] = new_state
+        time_t = float(selected_time)
+        current_state = int(node_states[selected_node])
+        new_state = 1 if current_state == 0 else 2
+        node_states[selected_node] = np.uint8(new_state)
 
-        # Record event
+        # Step 3: Record the executed event before any dependent clocks are
+        # rescheduled from the new local state.
         cursor = pool_cursor[0]
         if cursor < len(pool_times):
             pool_times[cursor] = time_t
-            pool_nodes[cursor] = node
+            pool_nodes[cursor] = selected_node
             pool_events[cursor] = new_state
             pool_cursor[0] += 1
+
+        # Step 4: Only refresh the event clocks whose local propensity can
+        # depend on the mutated node. Disconnected components remain untouched.
+        for node_idx in range(node_count):
+            if node_idx != selected_node and not _node_depends_on(
+                node_idx,
+                selected_node,
+                indptr,
+                indices,
+            ):
+                continue
+
+            propensity = _compute_node_propensity(
+                node_idx,
+                node_states,
+                indptr,
+                indices,
+                edge_weights,
+                transmission_rate,
+                recovery_rate,
+            )
+            propensities[node_idx] = propensity
+            next_event_times[node_idx] = _draw_next_event_time(
+                time_t,
+                node_idx,
+                _event_type_for_state(int(node_states[node_idx])),
+                propensity,
+            )
 
     return time_t
 
