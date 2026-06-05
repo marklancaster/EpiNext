@@ -1,6 +1,6 @@
 from typing import Any
 
-import networkx as nx
+import networkx as nx  # type: ignore
 import numpy as np
 
 from EpiNext.core.compiler import CompiledGraph, compile_graph
