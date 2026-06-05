@@ -6,6 +6,25 @@ import numpy as np
 
 @dataclass
 class CompiledGraph:
+    """A high-performance compiled representation of a network.
+
+    Stores the network structure in Compressed Sparse Row (CSR) format,
+    along with node states and weights for fast Numba execution.
+
+    Attributes
+    ----------
+    indptr : np.ndarray
+        CSR index pointer array of size N + 1.
+    indices : np.ndarray
+        CSR column indices array of size E.
+    edge_weights : np.ndarray
+        Weights associated with each edge, of size E.
+    node_weights : np.ndarray
+        Weights associated with each node, of size N.
+    node_states : np.ndarray
+        The state of each node, initialized to 0, of size N.
+    """
+
     indptr: np.ndarray
     indices: np.ndarray
     edge_weights: np.ndarray
@@ -20,10 +39,19 @@ _last_compiled_graph = None
 
 
 def compile_graph(G: Any) -> CompiledGraph:
-    """
-    Compiles a NetworkX graph into a CSR array structure.
-    Returns a CompiledGraph object.
+    """Compiles a NetworkX graph into a CSR array structure.
+
     Uses sequential caching to avoid re-compiling the exact same graph.
+
+    Parameters
+    ----------
+    G : Any
+        A NetworkX graph object (Graph or DiGraph).
+
+    Returns
+    -------
+    CompiledGraph
+        The compiled CSR representation of the graph.
     """
     global _last_compiled_graph_id, _last_compiled_graph
 
