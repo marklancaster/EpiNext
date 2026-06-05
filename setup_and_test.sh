@@ -8,9 +8,9 @@ echo "🚀 Setting up the EpiNext environment..."
 
 # 1. Ensure uv is installed (Jules' VM might need this if not pre-installed)
 if ! command -v uv &> /dev/null; then
-    echo "📦 Installing uv..."
-    curl -LsSf https://astral.sh/uv/install.sh | sh
-    source $HOME/.cargo/env
+    echo "📦 Installing uv via pip..."
+    python -m pip install --user uv
+    export PATH="$HOME/.local/bin:$PATH"
 fi
 
 # 2. Sync the project dependencies
