@@ -1,6 +1,6 @@
 from typing import Any
 
-import numba as nb  # type: ignore
+import numba as nb
 import numpy as np
 
 
