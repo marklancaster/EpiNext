@@ -22,7 +22,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11' # Adjust to your project's version if needed
+          python-version: '3.14' # Adjust to your project's version if needed
 
       - name: Install dependencies
         run: |
