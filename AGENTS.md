@@ -4,6 +4,24 @@ Welcome to the EpiNext codebase. This project is a high-performance, modern rewr
 
 When contributing to this repository, you must strictly adhere to the following architectural constraints:
 
+## 0. AMBIENT STATE & LIFE-CYCLE LOGGING
+Before executing any discovery routine or code modification, you must initialize your state tracking. You are strictly required to append a new log entry to your dedicated log file located at `.agents/logs/{yourname}.jsonl` at the conclusion of every execution cycle. Note that other agents may have separate logs in that directory.
+
+You must format this entry as a single line of valid JSON matching the schema below and append it using your file-writing tools. Do not output this block as raw text to the user:
+
+```json
+{
+  "agent_state": "string",       // E.g., 'discovery', 'tdd_generation', 'lint_validation'
+  "target_task": "string",       // The exact task name pulled from EpiNext_Task_Breakdown.md
+  "rationale": "string",         // Concise explanation of the step's architectural necessity
+  "execution_metrics": {
+    "files_read": ["string"],    // Files touched during this specific turn
+    "files_written": ["string"], // Files generated or refactored
+    "compiler_passed": false     // Strict status of mypy/ruff/pytest if executed
+  }
+}
+```
+
 ## 1. Tooling & Workflow
 * **Package Management:** Use `uv` for all dependency management and environment configuration.
 * **Linting:** Use `ruff` for all formatting and linting. Code must pass strict modern rules.
